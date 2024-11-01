@@ -11,14 +11,11 @@ public class FareCalculatorService {
 			throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
 		}
 	    
-		// utilisation de getTime() pour récupérer les données en miliseconde puis en
-		// minute
 		double inHour = (ticket.getInTime().getTime() / 60000);
 		double outHour = (ticket.getOutTime().getTime() / 60000);
 
 		// TODO: Some tests are failing here. Need to check if this logic is correct
 
-		// calcul de la durée en passant les minutes en heure
 		double duration = (outHour - inHour) / 60;
 
 		if (duration <= 0.5) {
