@@ -34,6 +34,7 @@ public class ParkingSpotDAO {
         }finally {
             dataBaseConfig.closeConnection(con);
         }
+        System.out.println("ici");
         return result;
     }
 
