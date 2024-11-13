@@ -11,6 +11,7 @@ public class DataBaseTestConfig extends DataBaseConfig {
     private static final Logger logger = LogManager.getLogger("DataBaseTestConfig");
 
     public Connection getConnection() throws ClassNotFoundException, SQLException {
+    	System.out.println("entrée dans get connection");
         logger.info("Create DB connection");
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(

@@ -20,6 +20,7 @@ public class TicketDAO {
 	public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
 	public boolean saveTicket(Ticket ticket) {
+		System.out.println("appel de la methode saveticket");
 		Connection con = null;
 		try {
 			con = dataBaseConfig.getConnection();
@@ -31,16 +32,20 @@ public class TicketDAO {
 			ps.setDouble(3, ticket.getPrice());
 			ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
 			ps.setTimestamp(5, (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
-			return ps.execute();
+			int rowsAffected = ps.executeUpdate();
+			System.out.println("la sauvegarde a fonctioné");
+			return rowsAffected ==1;
 		} catch (Exception ex) {
+			System.out.println("la sauvegarde n'a pas fonctionné");
 			logger.error("Error fetching next available slot", ex);
+			return false;
 		} finally {
 			dataBaseConfig.closeConnection(con);
-			return false;
 		}
 	}
 
 	public Ticket getTicket(String vehicleRegNumber) {
+		System.out.println("appel de la methode getTicket");
 		Connection con = null;
 		Ticket ticket = null;
 		try {
@@ -58,6 +63,7 @@ public class TicketDAO {
 				ticket.setPrice(rs.getDouble(3));
 				ticket.setInTime(rs.getTimestamp(4));
 				ticket.setOutTime(rs.getTimestamp(5));
+				System.out.println("le ticket dans getTicket :" + ticket);
 			}
 			dataBaseConfig.closeResultSet(rs);
 			dataBaseConfig.closePreparedStatement(ps);
@@ -88,21 +94,21 @@ public class TicketDAO {
 	}
 
 	public int getNbTickets(String vehicleRegNumber) {
+		System.out.println("appel de la méthode getNbTicket");
 		Connection con = null;
 		int count = 0;
 
 		try {
 			con = dataBaseConfig.getConnection();
-			String query = "SELECT COUNT(*) FROM ticket WHERE VEHICLE_REG_NUMBER = {vehicleRegNumber} ";
+			String query = "SELECT COUNT(*) FROM ticket WHERE VEHICLE_REG_NUMBER = ?";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1, vehicleRegNumber);
 
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				count = rs.getInt(1); // Récupérer le nombre d'occurrences
+				count = rs.getInt(1);
 			}
 
-			// Nettoyage des ressources
 			dataBaseConfig.closeResultSet(rs);
 			dataBaseConfig.closePreparedStatement(ps);
 		} catch (Exception ex) {
@@ -115,10 +121,12 @@ public class TicketDAO {
 	}
 
 	public boolean isRegularUser(String vehicleRegNumber) {
+		System.out.println("appel de la méthode isRegularUser");
 		boolean isRegularUser = false;
 
 		// Compter le nombre d'occurrences de la plaque d'immatriculation
 		int countOccurrences = this.getNbTickets(vehicleRegNumber);
+		System.out.println("nombre d occurence : " + countOccurrences);
 		
 		// Vérifier si le nombre d'occurrences est supérieur ou égal à 3
 		if (countOccurrences >= 3) {
