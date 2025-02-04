@@ -62,12 +62,11 @@ public class ParkingServiceTest {
 	@Test
 	@DisplayName("Test de sortie de véhicule")
 	public void processExitingVehicleTest() {
-		 ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	    System.setOut(new PrintStream(outContent));
 	    
 	    String messageSystem = "Recorded out-time for vehicle number:ABCDEF";
 	    String messageSystemElse = "Unable to update ticket information. Error occurred";
-		    
 		
 		parkingService.processExitingVehicle();
 		

@@ -47,12 +47,12 @@ public class ParkingService {
 				ticket.setPrice(0);
 				ticket.setInTime(inTime);
 				ticket.setOutTime(null);
-				System.out.println("On a bien l'enregistrement du ticket?");
+				System.out.println("Avant l'ajout du discount : "+ ticket.getDiscount());
+				boolean regularUser = ticketDAO.isRegularUser(vehicleRegNumber);
+				ticket.setDiscount(regularUser);
+				System.out.println("Après l'ajout du discount : "+ ticket.getDiscount());
 				ticketDAO.saveTicket(ticket);
 				System.out.println("Le Ticket :" + ticket);
-				//System.out.print("le ticket sauvegardé saveTIcket :" + ticketDAO.saveTicket(ticket));
-
-				boolean regularUser = ticketDAO.isRegularUser(vehicleRegNumber);
 
 				System.out.println("Generated Ticket and saved in DB");
 				System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
@@ -60,7 +60,8 @@ public class ParkingService {
 
 				if (regularUser == true) {
 					System.out.println(
-							"Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, vous allez obtenir une remise de 5%");
+							"Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, "
+							+ "vous allez obtenir une remise de 5%");
 				}
 
 			}
@@ -139,13 +140,7 @@ public class ParkingService {
 			Date outTime = new Date();
 			ticket.setOutTime(outTime);
 
-			System.out.println("le outTime : " + outTime);
-
-			boolean discount = ticketDAO.isRegularUser(vehicleRegNumber);
-
-			System.out.println("utilisateur régulier : " + discount);
-
-			fareCalculatorService.calculateFare(ticket, discount); // ici il y a la méthode qui est appelée
+			fareCalculatorService.calculateFare(ticket);
 
 			if (ticketDAO.updateTicket(ticket)) {
 				ParkingSpot parkingSpot = ticket.getParkingSpot();

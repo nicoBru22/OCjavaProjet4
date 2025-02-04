@@ -124,11 +124,9 @@ public class TicketDAO {
 		System.out.println("appel de la méthode isRegularUser");
 		boolean isRegularUser = false;
 
-		// Compter le nombre d'occurrences de la plaque d'immatriculation
-		int countOccurrences = this.getNbTickets(vehicleRegNumber);
+		int countOccurrences = getNbTickets(vehicleRegNumber);
 		System.out.println("nombre d occurence : " + countOccurrences);
 		
-		// Vérifier si le nombre d'occurrences est supérieur ou égal à 3
 		if (countOccurrences >= 3) {
 			isRegularUser = true;
 		}
