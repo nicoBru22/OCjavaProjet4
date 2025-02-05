@@ -6,8 +6,6 @@ import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.model.ParkingSpot;
-import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 
@@ -46,23 +44,20 @@ public class ParkingDataBaseIT {
 
 	@BeforeAll
 	private static void setUp() throws Exception {
+		System.out.print("Entrée dans le beforeALl.");
 		parkingSpotDAO = new ParkingSpotDAO();
 		parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
-
 		ticketDAO = new TicketDAO();
 		ticketDAO.dataBaseConfig = dataBaseTestConfig;
 		dataBasePrepareService = new DataBasePrepareService();
-
 		assertThat(ticketDAO.dataBaseConfig).isNotNull();
-		System.out.println("config du ticket :" + ticketDAO.dataBaseConfig);
 	}
 
 	@BeforeEach
 	private void setUpPerTest() throws Exception {
+		System.out.print("Entrée dans le beforeEach.");
 		when(inputReaderUtil.readSelection()).thenReturn(1);
 		when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-
-		ticketDAO.dataBaseConfig = dataBaseTestConfig;
 
 		dataBasePrepareService.clearDataBaseEntries();
 	}
@@ -81,7 +76,7 @@ public class ParkingDataBaseIT {
 
 		parkingService.processIncomingVehicle();
 
-		verify(inputReaderUtil, times(1)).readSelection();
+		verify(inputReaderUtil, times(1)).readSelection(); //pour une voiture
 		verify(inputReaderUtil, times(1)).readVehicleRegistrationNumber();
 		assertThat(inputReaderUtil.readSelection()).isEqualTo(1);
 		assertThat(inputReaderUtil.readVehicleRegistrationNumber()).isEqualTo("ABCDEF");
@@ -96,6 +91,8 @@ public class ParkingDataBaseIT {
 			ResultSet rs = ps.executeQuery();
 
 			boolean hasNext = rs.next();
+			
+			assertThat(hasNext).isEqualTo(true);
 
 			System.out.println("ticket ce qu'est rs.next() : " + hasNext);
 
@@ -103,6 +100,13 @@ public class ParkingDataBaseIT {
 				System.out.println("ticket ce qu'est rs.getString() :" + rs.getString("VEHICLE_REG_NUMBER"));
 				System.out.println("ID: " + rs.getInt("ID") + " | PARKING_NUMBER: " + rs.getInt("PARKING_NUMBER")
 						+ " | VEHICLE_REG_NUMBER: " + rs.getString("VEHICLE_REG_NUMBER"));
+				
+				int ticketId = rs.getInt("ID");
+			    int parkingNumber = rs.getInt("PARKING_NUMBER");
+			    assertThat(ticketId).isGreaterThan(0);
+			    assertThat(rs.getString("VEHICLE_REG_NUMBER")).isEqualTo("ABCDEF");
+			    assertThat(rs.getTimestamp("IN_TIME")).isNotNull();
+			    assertThat(parkingNumber).isGreaterThan(0);
 			} else {
 				System.out.println("Aucune ligne trouvée avec ce VEHICLE_REG_NUMBER.");
 			}
@@ -207,6 +211,7 @@ public class ParkingDataBaseIT {
 
 				assertThat(vehicleRegNumber).isEqualTo("ABCDEF");
 				assertThat(price).isEqualTo(0);
+	            assertThat(inTime).isNotNull();
 			} else {
 				fail("Aucune donnée trouvée pour le véhicule avec le numéro ABCDEF.");
 			}

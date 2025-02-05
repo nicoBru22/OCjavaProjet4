@@ -10,7 +10,7 @@ public class DataBaseConfig {
     private static final Logger logger = LogManager.getLogger("DataBaseConfig");
 
     public Connection getConnection() throws ClassNotFoundException, SQLException {
-    	System.out.println("appel de la méthode getconnection");
+    	System.out.println("Appel de la méthode getconnection");
         logger.info("Create DB connection");
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(

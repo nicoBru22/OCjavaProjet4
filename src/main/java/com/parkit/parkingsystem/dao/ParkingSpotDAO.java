@@ -23,8 +23,6 @@ public class ParkingSpotDAO {
         int result=-1;
         
         try {
-        	System.out.println("try de la methode getnextavailableslot");
-        	
             con = dataBaseConfig.getConnection();
             
         	System.out.println("get connection : " + dataBaseConfig.getConnection());
@@ -33,22 +31,16 @@ public class ParkingSpotDAO {
             ps.setString(1, parkingType.toString());
             ResultSet rs = ps.executeQuery();
             
-        	System.out.println("le rs ? " + rs);
-            
             if(rs.next()){
-            	System.out.println("dans le if");
-            	System.out.println("rs next() : " + rs.getInt(1));
                 result = rs.getInt(1);;
             }
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
         }catch (Exception ex){
-        	System.out.println("dans le catch");
             logger.error("Error fetching next available slot",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
         }
-    	System.out.println("result" + result);
         return result;
         
     }

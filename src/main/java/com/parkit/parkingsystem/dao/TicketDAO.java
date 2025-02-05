@@ -20,7 +20,7 @@ public class TicketDAO {
 	public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
 	public boolean saveTicket(Ticket ticket) {
-		System.out.println("appel de la methode saveticket");
+		System.out.println("Appel de la methode saveticket");
 		Connection con = null;
 		try {
 			con = dataBaseConfig.getConnection();

@@ -28,11 +28,11 @@ public class ParkingService {
 	}
 
 	public void processIncomingVehicle() {
+		System.out.println("Appel de la methode processIncomingVehicle");
 		try {
-			System.out.println("Appel de la methode processIncomingVehicle");
 			ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
+			System.out.println("Le parkingSpot : " + parkingSpot);
 			if (parkingSpot != null && parkingSpot.getId() > 0) {
-				System.out.println("Entrée dans le if de la méthode processIncoming");
 				String vehicleRegNumber = getVehichleRegNumber();
 				parkingSpot.setAvailable(false);
 				parkingSpotDAO.updateParking(parkingSpot);// allot this parking space and mark it's availability as
@@ -47,11 +47,10 @@ public class ParkingService {
 				ticket.setPrice(0);
 				ticket.setInTime(inTime);
 				ticket.setOutTime(null);
-				System.out.println("Avant l'ajout du discount : "+ ticket.getDiscount());
 				boolean regularUser = ticketDAO.isRegularUser(vehicleRegNumber);
 				ticket.setDiscount(regularUser);
-				System.out.println("Après l'ajout du discount : "+ ticket.getDiscount());
 				ticketDAO.saveTicket(ticket);
+				
 				System.out.println("Le Ticket :" + ticket);
 
 				System.out.println("Generated Ticket and saved in DB");
@@ -75,22 +74,20 @@ public class ParkingService {
 	}
 
 	private String getVehichleRegNumber() throws Exception {
-		System.out.println("appel de la methode getVehicleNumber");
+		System.out.println("Appel de la methode getVehicleNumber");
 		System.out.println("Please type the vehicle registration number and press enter key");
 		return inputReaderUtil.readVehicleRegistrationNumber();
 	}
 
 	public ParkingSpot getNextParkingNumberIfAvailable() {
-
 		System.out.println("Appel de la méthode getNextParkingNumberIfAvailable");
 
 		int parkingNumber = 0;
 		ParkingSpot parkingSpot = null;
 		try {
-			System.out.println("Try de la méthode getNextParkingNumber");
 			ParkingType parkingType = getVehichleType();
 			parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
-			System.out.println(parkingNumber);
+			System.out.println("Le numéro de parking :" + parkingNumber);
 			if (parkingNumber > 0) {
 				System.out.println("numero de parking supérieur à 0");
 				parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
@@ -110,7 +107,6 @@ public class ParkingService {
 	}
 
 	private ParkingType getVehichleType() {
-
 		System.out.println("Appel de la méthode getVehicleType");
 
 		System.out.println("Please select vehicle type from menu");
