@@ -17,15 +17,11 @@ public class ParkingSpotDAO {
     public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
     public int getNextAvailableSlot(ParkingType parkingType){
-    	System.out.println("Appel de la methode getnextavailableslot");
-    	
         Connection con = null;
         int result=-1;
         
         try {
             con = dataBaseConfig.getConnection();
-            
-        	System.out.println("get connection : " + dataBaseConfig.getConnection());
         	
             PreparedStatement ps = con.prepareStatement(DBConstants.GET_NEXT_PARKING_SPOT);
             ps.setString(1, parkingType.toString());

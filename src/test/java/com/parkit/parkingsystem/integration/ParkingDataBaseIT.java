@@ -44,7 +44,6 @@ public class ParkingDataBaseIT {
 
 	@BeforeAll
 	private static void setUp() throws Exception {
-		System.out.print("Entrée dans le beforeALl.");
 		parkingSpotDAO = new ParkingSpotDAO();
 		parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
 		ticketDAO = new TicketDAO();
@@ -55,7 +54,6 @@ public class ParkingDataBaseIT {
 
 	@BeforeEach
 	private void setUpPerTest() throws Exception {
-		System.out.print("Entrée dans le beforeEach.");
 		when(inputReaderUtil.readSelection()).thenReturn(1);
 		when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 
@@ -70,7 +68,6 @@ public class ParkingDataBaseIT {
 	@Test
 	@DisplayName("Test Intégration Entrée Parking")
 	public void testParkingACarIntegration() throws Exception {
-		System.out.println("TicketDAO Config: " + ticketDAO.dataBaseConfig);
 		ParkingSpotDAO spyParkingSpotDAO = spy(parkingSpotDAO);
 		ParkingService parkingService = new ParkingService(inputReaderUtil, spyParkingSpotDAO, ticketDAO);
 
@@ -93,14 +90,7 @@ public class ParkingDataBaseIT {
 			boolean hasNext = rs.next();
 			
 			assertThat(hasNext).isEqualTo(true);
-
-			System.out.println("ticket ce qu'est rs.next() : " + hasNext);
-
-			if (hasNext) {
-				System.out.println("ticket ce qu'est rs.getString() :" + rs.getString("VEHICLE_REG_NUMBER"));
-				System.out.println("ID: " + rs.getInt("ID") + " | PARKING_NUMBER: " + rs.getInt("PARKING_NUMBER")
-						+ " | VEHICLE_REG_NUMBER: " + rs.getString("VEHICLE_REG_NUMBER"));
-				
+			if (hasNext) {				
 				int ticketId = rs.getInt("ID");
 			    int parkingNumber = rs.getInt("PARKING_NUMBER");
 			    assertThat(ticketId).isGreaterThan(0);
@@ -120,18 +110,14 @@ public class ParkingDataBaseIT {
 			ps.setBoolean(1, false);
 			ResultSet rs = ps.executeQuery();
 
-			if (rs.next()) { // Vérifie si une ligne existe
-				System.out.println("ID: " + rs.getInt("PARKING_NUMBER") + " | AVAILABLE: " + rs.getBoolean("AVAILABLE")
-						+ " | TYPE: " + rs.getString("TYPE"));
+			if (rs.next()) {
 
-				// Vérifie les conditions sur le parking
-				assertThat(rs.getBoolean("AVAILABLE")).isEqualTo(false); // Vérifier que le parking est maintenant
-																			// occupé
+				assertThat(rs.getBoolean("AVAILABLE")).isEqualTo(false);
 			} else {
 				System.out.println("Aucune ligne trouvée avec la condition de disponibilité.");
 			}
 		} catch (SQLException e) {
-			e.printStackTrace(); // Gérer l'exception (par exemple, l'afficher ou la relancer)
+			e.printStackTrace();
 		}
 	}
 
@@ -158,14 +144,9 @@ public class ParkingDataBaseIT {
 				Timestamp inTime = rs.getTimestamp("IN_TIME");
 				Timestamp outTime = rs.getTimestamp("OUT_TIME");
 
-				System.out.println("Données du ticket récupérées :");
-				System.out.println("VEHICLE_REG_NUMBER: " + vehicleRegNumber);
-				System.out.println("PRICE: " + price);
-				System.out.println("IN_TIME: " + inTime);
-				System.out.println("OUT_TIME: " + outTime);
-
 				assertThat(vehicleRegNumber).isEqualTo("ABCDEF");
 				assertThat(price).isEqualTo(0);
+				assertThat(inTime).isNotNull();
 			} else {
 				fail("Aucune donnée trouvée pour le véhicule avec le numéro ABCDEF.");
 			}
@@ -191,7 +172,22 @@ public class ParkingDataBaseIT {
 
 		verify(inputReaderUtil, times(3)).readSelection();
 		verify(inputReaderUtil, times(6)).readVehicleRegistrationNumber();
+		
+	    try (PreparedStatement ps = ticketDAO.dataBaseConfig.getConnection()
+	            .prepareStatement("SELECT COUNT(*) FROM ticket WHERE VEHICLE_REG_NUMBER = ?")) {
+	        ps.setString(1, "ABCDEF");
+	        ResultSet rs = ps.executeQuery();
 
+	        if (rs.next()) {
+	            int count = rs.getInt(1);
+	            assertThat(count).isEqualTo(3);
+	        } else {
+	            fail("Aucune donnée trouvée pour le véhicule avec le numéro ABCDEF.");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        fail("Erreur lors de la vérification des données dans la base.");
+	    }
 		try (PreparedStatement ps = ticketDAO.dataBaseConfig.getConnection()
 				.prepareStatement("SELECT * FROM ticket WHERE VEHICLE_REG_NUMBER = ?")) {
 			ps.setString(1, "ABCDEF");
@@ -201,13 +197,6 @@ public class ParkingDataBaseIT {
 				String vehicleRegNumber = rs.getString("VEHICLE_REG_NUMBER");
 				double price = rs.getDouble("PRICE");
 				Timestamp inTime = rs.getTimestamp("IN_TIME");
-				Timestamp outTime = rs.getTimestamp("OUT_TIME");
-
-				System.out.println("Données du ticket récupérées :");
-				System.out.println("VEHICLE_REG_NUMBER: " + vehicleRegNumber);
-				System.out.println("PRICE: " + price);
-				System.out.println("IN_TIME: " + inTime);
-				System.out.println("OUT_TIME: " + outTime);
 
 				assertThat(vehicleRegNumber).isEqualTo("ABCDEF");
 				assertThat(price).isEqualTo(0);

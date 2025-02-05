@@ -20,7 +20,6 @@ public class TicketDAO {
 	public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
 	public boolean saveTicket(Ticket ticket) {
-		System.out.println("Appel de la methode saveticket");
 		Connection con = null;
 		try {
 			con = dataBaseConfig.getConnection();
@@ -33,7 +32,6 @@ public class TicketDAO {
 			ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
 			ps.setTimestamp(5, (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
 			int rowsAffected = ps.executeUpdate();
-			System.out.println("la sauvegarde a fonctioné");
 			return rowsAffected ==1;
 		} catch (Exception ex) {
 			System.out.println("la sauvegarde n'a pas fonctionné");
@@ -45,7 +43,6 @@ public class TicketDAO {
 	}
 
 	public Ticket getTicket(String vehicleRegNumber) {
-		System.out.println("appel de la methode getTicket");
 		Connection con = null;
 		Ticket ticket = null;
 		try {
@@ -94,7 +91,6 @@ public class TicketDAO {
 	}
 
 	public int getNbTickets(String vehicleRegNumber) {
-		System.out.println("appel de la méthode getNbTicket");
 		Connection con = null;
 		int count = 0;
 
@@ -121,11 +117,9 @@ public class TicketDAO {
 	}
 
 	public boolean isRegularUser(String vehicleRegNumber) {
-		System.out.println("appel de la méthode isRegularUser");
 		boolean isRegularUser = false;
 
 		int countOccurrences = getNbTickets(vehicleRegNumber);
-		System.out.println("nombre d occurence : " + countOccurrences);
 		
 		if (countOccurrences >= 3) {
 			isRegularUser = true;

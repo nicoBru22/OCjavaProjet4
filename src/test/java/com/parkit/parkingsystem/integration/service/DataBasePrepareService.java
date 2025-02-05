@@ -9,7 +9,6 @@ public class DataBasePrepareService {
     DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
 
     public void clearDataBaseEntries(){
-    	System.out.println("Appel de la méthode clearDataBaseEntries()");
         Connection connection = null;
         try{
             connection = dataBaseTestConfig.getConnection();

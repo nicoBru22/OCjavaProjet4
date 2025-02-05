@@ -22,7 +22,6 @@ public class InputReaderUtil {
     }
 
     public String readVehicleRegistrationNumber() throws Exception {
-    	System.out.println("appel de la méthode readVehicleRegistrationNumber");
         try {
             String vehicleRegNumber= scan.nextLine();
             if(vehicleRegNumber == null || vehicleRegNumber.trim().length()==0) {
